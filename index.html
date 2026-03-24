@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structures Algorithmiques — 1ère CIEL</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent-blue: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-orange: #ffa657;
+    --accent-purple: #bc8cff;
+    --accent-pink: #f778ba;
+    --accent-cyan: #39d0d8;
+    --seq-color: #3fb950;
+    --alt-color: #ffa657;
+    --rep-color: #58a6ff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #58a6ff22, #3fb95022);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #e6edf3 0%, #58a6ff 60%, #3fb950 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    margin-bottom: 0.8rem;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* GRID LAYOUT */
+  .grid {
+    max-width: 1100px;
+    margin: 2.5rem auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .card-title { font-weight: 700; font-size: 1rem; }
+  .card-tag {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.2rem 0.55rem;
+    border-radius: 5px;
+  }
+
+  .card-body { padding: 1.2rem 1.4rem; }
+
+  .desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.1rem;
+  }
+
+  /* FLOWCHART */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 1rem 0;
+  }
+
+  .flow-box {
+    padding: 0.45rem 1.2rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  .flow-arrow {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .flow-start, .flow-end {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 0.35rem 1.2rem;
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .flow-action {
+    border: 2px solid;
+    font-weight: 600;
+  }
+
+  .flow-diamond {
+    transform: rotate(45deg);
+    width: 70px; height: 70px;
+    border: 2px solid;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0.3rem 0;
+  }
+  .flow-diamond span {
+    transform: rotate(-45deg);
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  /* Branchement conditionnel */
+  .branch-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100%;
+    justify-content: center;
+    margin: 0.2rem 0;
+  }
+  .branch-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 90px;
+  }
+  .branch-label {
+    font-size: 0.62rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin-top: 0.8rem;
+  }
+
+  .kw { color: var(--accent-pink); font-weight: 700; }
+  .cond { color: var(--accent-orange); }
+  .act { color: var(--accent-cyan); }
+  .cmt { color: #6e7681; font-style: italic; }
+  .num { color: var(--accent-purple); }
+  .var { color: var(--text); }
+
+  /* TABS pour langages */
+  .tabs { display: flex; gap: 0.4rem; margin-top: 1rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .tab-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--surface); color: var(--text); border-color: var(--accent-blue); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ALERT */
+  .alert {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: #ffa65715;
+    border: 1px solid #ffa65740;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    color: #ffa657cc;
+    line-height: 1.5;
+    margin-top: 1rem;
+  }
+  .alert-icon { flex-shrink: 0; font-size: 0.9rem; }
+
+  /* VARIANTS */
+  .variant {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+  }
+  .variant-title { font-weight: 600; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem; font-family: 'JetBrains Mono', monospace; }
+
+  /* COLORS par type */
+  .seq .card-header { border-bottom-color: #3fb95030; }
+  .seq .card-icon { background: #3fb95020; }
+  .seq .flow-action { border-color: var(--seq-color); color: var(--seq-color); }
+  .seq .card-title { color: var(--seq-color); }
+
+  .alt .card-header { border-bottom-color: #ffa65730; }
+  .alt .card-icon { background: #ffa65720; }
+  .alt .flow-action { border-color: var(--alt-color); color: var(--alt-color); }
+  .alt .flow-diamond { border-color: var(--alt-color); color: var(--alt-color); }
+  .alt .card-title { color: var(--alt-color); }
+
+  .rep .card-header { border-bottom-color: #58a6ff30; }
+  .rep .card-icon { background: #58a6ff20; }
+  .rep .flow-action { border-color: var(--rep-color); color: var(--rep-color); }
+  .rep .flow-diamond { border-color: var(--rep-color); color: var(--rep-color); }
+  .rep .card-title { color: var(--rep-color); }
+
+  /* WIDE CARD */
+  .wide { grid-column: 1 / -1; }
+
+  /* SUB GRID inside wide card */
+  .sub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .sub-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .sub-card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* RÉCAP TABLE */
+  .recap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+  }
+  .recap-table th {
+    background: var(--surface2);
+    padding: 0.6rem 1rem;
+    text-align: left;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+  .recap-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    line-height: 1.5;
+  }
+  .recap-table tr:last-child td { border-bottom: none; }
+  .recap-table tr:hover td { background: var(--surface2); }
+
+  .dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  @media (max-width: 600px) {
+    .branch-row { gap: 0.8rem; }
+    .code-block { font-size: 0.68rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">1ère CIEL · Algorithmique</div>
+  <h1>Structures Algorithmiques</h1>
+  <p class="subtitle">Un algorithme est une suite d'instructions ordonnées permettant de résoudre un problème. Il peut être représenté sous forme d'<strong>algorigramme</strong> (graphique) ou de <strong>pseudo-code</strong> (littéral).</p>
+</header>
+
+<div class="grid">
+
+  <!-- ──────────────── SÉQUENTIELLE ──────────────── -->
+  <div class="card seq">
+    <div class="card-header">
+      <div class="card-icon">▶</div>
+      <span class="card-title">Structure Séquentielle</span>
+      <span class="card-tag">linéaire</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">Les instructions s'exécutent les unes après les autres, dans l'ordre où elles sont écrites. C'est la structure de base de tout algorithme.</p>
+
+      <div class="flow">
+        <div class="flow-start">DÉBUT</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box flow-action">Action 1</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box flow-action">Action 2</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-box flow-action">Action 3</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-start">FIN</div>
+      </div>
+
+      <div class="code-block">
+<span class="kw">Début</span>
+  <span class="act">Action_1</span>
+  <span class="act">Action_2</span>
+  <span class="act">Action_3</span>
+<span class="kw">Fin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────── ALTERNATIVE ──────────────── -->
+  <div class="card alt">
+    <div class="card-header">
+      <div class="card-icon">⇄</div>
+      <span class="card-title">Structure Alternative</span>
+      <span class="card-tag">si…alors</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">On évalue une <strong>condition booléenne</strong>. Selon le résultat (<em>vrai</em> ou <em>faux</em>), on exécute l'une ou l'autre des séquences — elles s'excluent mutuellement.</p>
+
+      <div class="flow">
+        <div class="flow-start">DÉBUT</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-diamond" style="border-color:var(--alt-color);color:var(--alt-color)">
+          <span>condition<br>?</span>
+        </div>
+        <div class="branch-row">
+          <div class="branch-col">
+            <div class="branch-label">VRAI</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box flow-action" style="min-width:80px;font-size:0.72rem">Séquence A</div>
+          </div>
+          <div class="branch-col">
+            <div class="branch-label">FAUX</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box flow-action" style="min-width:80px;font-size:0.72rem">Séquence B</div>
+          </div>
+        </div>
+        <div class="flow-arrow" style="margin-top:0.4rem">↓</div>
+        <div class="flow-start">FIN</div>
+      </div>
+
+      <div class="code-block">
+<span class="kw">SI</span> <span class="cond">condition</span> <span class="kw">ALORS</span>
+  <span class="act">Séquence_A</span>
+<span class="kw">SINON</span>
+  <span class="act">Séquence_B</span>
+<span class="kw">FIN SI</span>
+      </div>
+
+      <div class="variant">
+        <div class="variant-title">// Variante sans SINON</div>
+        <div class="code-block" style="margin-top:0.4rem;border:none;padding:0;background:transparent">
+<span class="kw">SI</span> <span class="cond">condition</span> <span class="kw">ALORS</span>
+  <span class="act">Séquence_A</span>   <span class="cmt">← si faux : on passe</span>
+<span class="kw">FIN SI</span>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab(this,'alt-c')">C/C++</button>
+        <button class="tab-btn" onclick="showTab(this,'alt-py')">Python</button>
+      </div>
+      <div class="tab-content active" id="alt-c">
+        <div class="code-block">
+<span class="kw">if</span> (<span class="cond">condition</span>) {
+  <span class="act">// Séquence A</span>
+} <span class="kw">else</span> {
+  <span class="act">// Séquence B</span>
+}
+        </div>
+      </div>
+      <div class="tab-content" id="alt-py">
+        <div class="code-block">
+<span class="kw">if</span> <span class="cond">condition</span>:
+    <span class="act"># Séquence A</span>
+<span class="kw">else</span>:
+    <span class="act"># Séquence B</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────── BOUCLES WIDE CARD ──────────────── -->
+  <div class="card rep wide">
+    <div class="card-header">
+      <div class="card-icon">↻</div>
+      <span class="card-title">Structures Répétitives (Itératives)</span>
+      <span class="card-tag">boucles</span>
+    </div>
+    <div class="card-body">
+      <p class="desc">On répète un bloc d'instructions. Il existe trois formes selon qu'on <strong>connaît</strong> ou non le nombre d'itérations, et selon le <strong>moment du test</strong> de la condition.</p>
+
+      <div class="sub-grid">
+
+        <!-- FAIRE … JUSQU'À -->
+        <div class="sub-card">
+          <div class="sub-card-title">① FAIRE … JUSQU'À</div>
+          <p class="desc" style="font-size:0.78rem">La séquence est exécutée <strong>au moins une fois</strong>. Le test de la condition a lieu <em>après</em> chaque itération.</p>
+          <div class="flow" style="margin:0.8rem 0">
+            <div class="flow-start" style="font-size:0.7rem">DÉBUT</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box flow-action" style="font-size:0.72rem">Séquence</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-diamond" style="border-color:var(--rep-color);color:var(--rep-color);width:60px;height:60px">
+              <span style="font-size:0.6rem">cond<br>?</span>
+            </div>
+            <div style="display:flex;gap:1.2rem;justify-content:center;align-items:flex-start;margin:0.2rem 0">
+              <div style="display:flex;flex-direction:column;align-items:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+                <span>FAUX</span>
+                <span style="font-size:1rem;color:var(--muted)">↩</span>
+                <span style="font-size:0.6rem">retour boucle</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+                <span>VRAI</span>
+                <span style="font-size:1rem;color:var(--muted)">↓</span>
+              </div>
+            </div>
+            <div class="flow-start" style="font-size:0.7rem">FIN</div>
+          </div>
+          <div class="code-block">
+<span class="kw">FAIRE</span>
+  <span class="act">Séquence</span>
+<span class="kw">JUSQU'À</span> <span class="cond">condition fausse</span>
+          </div>
+        </div>
+
+        <!-- TANT QUE … FAIRE -->
+        <div class="sub-card">
+          <div class="sub-card-title">② TANT QUE … FAIRE</div>
+          <p class="desc" style="font-size:0.78rem">Le test est effectué <strong>avant</strong> chaque itération. Si la condition est fausse dès le départ, la séquence n'est <em>jamais</em> exécutée.</p>
+          <div class="flow" style="margin:0.8rem 0">
+            <div class="flow-start" style="font-size:0.7rem">DÉBUT</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-diamond" style="border-color:var(--rep-color);color:var(--rep-color);width:60px;height:60px">
+              <span style="font-size:0.6rem">cond<br>?</span>
+            </div>
+            <div style="display:flex;gap:1.2rem;justify-content:center;align-items:flex-start;margin:0.2rem 0">
+              <div style="display:flex;flex-direction:column;align-items:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+                <span>FAUX</span>
+                <span style="font-size:1rem">→</span>
+                <span style="font-size:0.6rem">sortie</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+                <span>VRAI</span>
+                <span style="font-size:1rem;color:var(--muted)">↓</span>
+                <div class="flow-box flow-action" style="font-size:0.68rem;min-width:70px">Séquence</div>
+                <span style="font-size:1rem">↩</span>
+              </div>
+            </div>
+            <div class="flow-start" style="font-size:0.7rem">FIN</div>
+          </div>
+          <div class="code-block">
+<span class="kw">TANT QUE</span> <span class="cond">condition vraie</span> <span class="kw">FAIRE</span>
+  <span class="act">Séquence</span>
+<span class="kw">FIN TANT QUE</span>
+          </div>
+          <div class="tabs">
+            <button class="tab-btn active" onclick="showTab(this,'tw-c')">C/C++</button>
+            <button class="tab-btn" onclick="showTab(this,'tw-py')">Python</button>
+          </div>
+          <div class="tab-content active" id="tw-c">
+            <div class="code-block">
+<span class="kw">while</span> (<span class="cond">condition</span>) {
+  <span class="act">// Séquence</span>
+}
+            </div>
+          </div>
+          <div class="tab-content" id="tw-py">
+            <div class="code-block">
+<span class="kw">while</span> <span class="cond">condition</span>:
+    <span class="act"># Séquence</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- POUR … FAIRE -->
+        <div class="sub-card">
+          <div class="sub-card-title">③ POUR … FAIRE</div>
+          <p class="desc" style="font-size:0.78rem">On connaît <strong>à l'avance</strong> le nombre d'itérations. Un compteur <code style="color:var(--accent-purple)">i</code> évolue de la valeur initiale jusqu'à la valeur finale.</p>
+          <div class="flow" style="margin:0.8rem 0">
+            <div class="flow-start" style="font-size:0.7rem">DÉBUT</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-box" style="background:var(--surface);border:1px dashed var(--rep-color);color:var(--rep-color);font-size:0.68rem;border-radius:6px">i = 0</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-diamond" style="border-color:var(--rep-color);color:var(--rep-color);width:60px;height:60px">
+              <span style="font-size:0.58rem">i ≤ N<br>?</span>
+            </div>
+            <div style="display:flex;gap:1rem;justify-content:center;align-items:flex-start;margin:0.2rem 0">
+              <div style="display:flex;flex-direction:column;align-items:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+                <span>NON</span><span style="font-size:1rem">→</span><span>sortie</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;font-size:0.62rem;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+                <span>OUI</span>
+                <span style="font-size:1rem">↓</span>
+                <div class="flow-box flow-action" style="font-size:0.68rem;min-width:70px">Séquence</div>
+                <span style="font-size:0.6rem">i++</span>
+                <span style="font-size:1rem">↩</span>
+              </div>
+            </div>
+            <div class="flow-start" style="font-size:0.7rem">FIN</div>
+          </div>
+          <div class="code-block">
+<span class="kw">POUR</span> <span class="var">i</span> allant de <span class="num">0</span> à <span class="num">N</span> <span class="kw">FAIRE</span>
+  <span class="act">Séquence</span>
+<span class="kw">FIN POUR</span>
+          </div>
+          <div class="tabs">
+            <button class="tab-btn active" onclick="showTab(this,'for-c')">C/C++</button>
+            <button class="tab-btn" onclick="showTab(this,'for-py')">Python</button>
+          </div>
+          <div class="tab-content active" id="for-c">
+            <div class="code-block">
+<span class="kw">for</span> (<span class="var">i</span>=<span class="num">0</span>; <span class="var">i</span>&lt;=<span class="num">N</span>; <span class="var">i</span>++) {
+  <span class="act">// Séquence</span>
+}
+            </div>
+          </div>
+          <div class="tab-content" id="for-py">
+            <div class="code-block">
+<span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> range(<span class="num">0</span>, <span class="num">N</span>+<span class="num">1</span>):
+    <span class="act"># Séquence</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sub-grid -->
+
+      <div class="alert">
+        <span class="alert-icon">⚠</span>
+        <span><strong>Point de vigilance :</strong> Pour que toute boucle puisse se terminer, la condition doit <em>obligatoirement finir par changer de valeur</em>. Une boucle infinie bloque le programme !</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────── TABLEAU RÉCAP ──────────────── -->
+  <div class="card wide">
+    <div class="card-header">
+      <div class="card-icon">≡</div>
+      <span class="card-title" style="color:var(--accent-cyan)">Tableau Récapitulatif</span>
+      <span class="card-tag">synthèse</span>
+    </div>
+    <div class="card-body">
+      <table class="recap-table">
+        <thead>
+          <tr>
+            <th>Structure</th>
+            <th>Quand l'utiliser ?</th>
+            <th>Mots-clés</th>
+            <th>Particularité</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="dot" style="background:var(--seq-color)"></span><strong>Séquentielle</strong></td>
+            <td>Toujours — base de tout algorithme</td>
+            <td><code class="kw" style="font-size:0.75rem">Début / Fin</code></td>
+            <td>Exécution linéaire, dans l'ordre</td>
+          </tr>
+          <tr>
+            <td><span class="dot" style="background:var(--alt-color)"></span><strong>Alternative</strong></td>
+            <td>Choix entre deux chemins selon une condition</td>
+            <td><code class="kw" style="font-size:0.75rem">SI … ALORS … SINON</code></td>
+            <td>Un seul chemin emprunté à chaque fois</td>
+          </tr>
+          <tr>
+            <td><span class="dot" style="background:var(--rep-color)"></span><strong>FAIRE … JUSQU'À</strong></td>
+            <td>Au moins une exécution garantie</td>
+            <td><code class="kw" style="font-size:0.75rem">FAIRE … JUSQU'À</code></td>
+            <td>Test <em>après</em> la séquence</td>
+          </tr>
+          <tr>
+            <td><span class="dot" style="background:var(--rep-color)"></span><strong>TANT QUE … FAIRE</strong></td>
+            <td>Nombre d'itérations inconnu a priori</td>
+            <td><code class="kw" style="font-size:0.75rem">TANT QUE … FAIRE</code></td>
+            <td>Test <em>avant</em> la séquence (peut ne jamais s'exécuter)</td>
+          </tr>
+          <tr>
+            <td><span class="dot" style="background:var(--rep-color)"></span><strong>POUR … FAIRE</strong></td>
+            <td>Nombre d'itérations connu à l'avance</td>
+            <td><code class="kw" style="font-size:0.75rem">POUR i de 0 à N</code></td>
+            <td>Compteur incrémenté automatiquement</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<div class="footer">
+  <p>Structures algorithmiques · 1ère CIEL</p>
+</div>
+
+<script>
+  function showTab(btn, id) {
+    const parent = btn.closest('.card-body, .sub-card');
+    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+</script>
+</body>
+</html>
