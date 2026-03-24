@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche Élève — Git & La Quête du Code · 1ère CIEL</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --muted: #718096;
+    --green: #2d6a4f;
+    --green-light: #d8f3dc;
+    --blue: #1a56db;
+    --blue-light: #dbeafe;
+    --orange: #c05621;
+    --orange-light: #feebc8;
+    --red: #c53030;
+    --red-light: #fed7d7;
+    --purple: #553c9a;
+    --purple-light: #e9d8fd;
+    --code-bg: #1e2530;
+    --code-text: #e2e8f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* PRINT */
+  @media print {
+    body { background: white; font-size: 11px; }
+    .page { box-shadow: none; margin: 0; border-radius: 0; }
+    .no-print { display: none; }
+    .page-break { page-break-before: always; }
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 1.5rem auto;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  .page-header {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    color: white;
+    padding: 1.8rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .header-icon {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .header-text h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-tag {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* CONTENT */
+  .content { padding: 2rem 2.5rem; }
+
+  /* SECTION */
+  .section { margin-bottom: 2rem; }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .section-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 0.75rem;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--text);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-body { flex: 1; }
+  .step-label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 0.3rem;
+  }
+  .step-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+
+  /* CODE */
+  .code {
+    background: var(--code-bg);
+    color: var(--code-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+
+  .code .prompt { color: #68d391; user-select: none; }
+  .code .cmd { color: #90cdf4; font-weight: 600; }
+  .code .arg { color: #fbd38d; }
+  .code .cmt { color: #718096; font-style: italic; }
+  .code .out { color: #a0aec0; }
+
+  /* CARDS GRID */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .card {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+  }
+  .card-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .card .code { font-size: 0.7rem; }
+
+  /* ALERT */
+  .alert {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    margin: 0.75rem 0;
+  }
+  .alert-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+  .alert.green { background: var(--green-light); border: 1px solid #b7e4c7; color: #1b4332; }
+  .alert.orange { background: var(--orange-light); border: 1px solid #f6ad55; color: #7b341e; }
+  .alert.blue { background: var(--blue-light); border: 1px solid #93c5fd; color: #1e3a5f; }
+  .alert.red { background: var(--red-light); border: 1px solid #fc8181; color: #742a2a; }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  th {
+    background: #f1f5f9;
+    padding: 0.55rem 0.8rem;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+
+  /* BADGE */
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .badge.green { background: var(--green-light); color: var(--green); }
+  .badge.blue { background: var(--blue-light); color: var(--blue); }
+  .badge.orange { background: var(--orange-light); color: var(--orange); }
+  .badge.purple { background: var(--purple-light); color: var(--purple); }
+  .badge.red { background: var(--red-light); color: var(--red); }
+
+  /* ROLE BOX */
+  .role-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .role-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem;
+    position: relative;
+  }
+  .role-card.active { border-color: #3182ce; background: #ebf8ff; }
+  .role-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.15rem; }
+  .role-file { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .role-branch { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .checklist li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.82rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .check-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* COMMIT TYPES */
+  .commit-types { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+  .commit-type {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+  }
+  .commit-prefix { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.7rem; }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  /* PAGE 2 */
+  .page-break { padding: 0; }
+
+  /* SCENARIO */
+  .story-box {
+    background: linear-gradient(135deg, #1a202c, #2d3748);
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 1.2rem 1.5rem;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+  .story-box strong { color: #f6e05e; }
+
+  .scene-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .scene-card {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .scene-header {
+    padding: 0.6rem 1rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .scene-body { padding: 0.75rem 1rem; font-size: 0.78rem; }
+  .scene-body p { margin-bottom: 0.4rem; }
+  .scene-struct { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; margin-top: 0.5rem; }
+
+  .s1 .scene-header { background: #d8f3dc; color: #1b4332; }
+  .s2 .scene-header { background: #feebc8; color: #7b341e; }
+  .s3 .scene-header { background: #dbeafe; color: #1e3a5f; }
+  .s4 .scene-header { background: #e9d8fd; color: #44337a; }
+
+  /* PRINT BUTTON */
+  .print-bar {
+    max-width: 860px;
+    margin: 1rem auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+  .btn {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: #1a202c; color: white; }
+  .btn-primary:hover { background: #2d3748; }
+
+  @media (max-width: 600px) {
+    .content { padding: 1.2rem; }
+    .cards, .role-grid, .scene-grid { grid-template-columns: 1fr; }
+    .page-header { padding: 1.2rem; gap: 1rem; }
+    .header-icon { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="no-print print-bar">
+  <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimer / PDF</button>
+</div>
+
+<!-- ═══════════════════ PAGE 1 ═══════════════════ -->
+<div class="page">
+
+  <div class="page-header">
+    <div class="header-icon">⚔️</div>
+    <div class="header-text">
+      <h1>La Quête du Code — Fiche Élève</h1>
+      <div class="header-meta">
+        <span class="meta-tag">1ère CIEL</span>
+        <span class="meta-tag">Git + Python</span>
+        <span class="meta-tag">Algorithmique</span>
+        <span class="meta-tag">Groupe de 4</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OBJECTIFS -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#dbeafe">🎯</div>
+        Objectifs du projet
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="card-title">🌿 Git</div>
+          <ul style="font-size:0.79rem;padding-left:1rem;color:#4a5568">
+            <li>Créer et gérer des branches</li>
+            <li>Effectuer des commits clairs</li>
+            <li>Pousser et récupérer du code</li>
+            <li>Fusionner (merge) et résoudre des conflits</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">🧠 Algorithmique</div>
+          <ul style="font-size:0.79rem;padding-left:1rem;color:#4a5568">
+            <li>Structure séquentielle</li>
+            <li>Structure alternative (SI…ALORS)</li>
+            <li>Boucle TANT QUE</li>
+            <li>Boucle POUR</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RÔLES -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#e9d8fd">👥</div>
+        Répartition des rôles
+      </div>
+      <div class="role-grid">
+        <div class="role-card">
+          <div class="role-name">👤 Élève 1 — L'Intro</div>
+          <div class="role-file">📄 scenes/intro.py</div>
+          <div class="role-branch"><span class="badge green">scene/intro</span></div>
+          <div style="font-size:0.75rem;color:#718096;margin-top:0.4rem">Structure séquentielle + choix simple</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">👤 Élève 2 — La Forêt</div>
+          <div class="role-file">📄 scenes/foret.py</div>
+          <div class="role-branch"><span class="badge orange">scene/foret</span></div>
+          <div style="font-size:0.75rem;color:#718096;margin-top:0.4rem">Structure alternative + boucle de combat</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">👤 Élève 3 — La Caverne</div>
+          <div class="role-file">📄 scenes/caverne.py</div>
+          <div class="role-branch"><span class="badge blue">scene/caverne</span></div>
+          <div style="font-size:0.75rem;color:#718096;margin-top:0.4rem">Boucle POUR + boucle TANT QUE</div>
+        </div>
+        <div class="role-card">
+          <div class="role-name">👤 Élève 4 — Le Boss</div>
+          <div class="role-file">📄 scenes/boss.py</div>
+          <div class="role-branch"><span class="badge purple">scene/boss</span></div>
+          <div style="font-size:0.75rem;color:#718096;margin-top:0.4rem">Toutes les structures + inventaire</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORKFLOW GIT -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#d8f3dc">🌿</div>
+        Workflow Git — étape par étape
+      </div>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-label">Cloner le dépôt (une seule fois)</div>
+            <div class="step-desc">Récupère une copie locale du projet sur ton ordinateur.</div>
+            <div class="code">
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">clone</span> https://github.com/votre-classe/jeu-aventure<br>
+<span class="prompt">$ </span><span class="cmd">cd</span> <span class="arg">jeu-aventure</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-label">Créer ta branche de travail</div>
+            <div class="step-desc">Chaque élève travaille sur sa propre branche. <strong>Ne jamais modifier directement <code>main</code> !</strong></div>
+            <div class="code">
+<span class="cmt"># Remplace "intro" par foret / caverne / boss selon ton rôle</span><br>
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">checkout -b</span> scene/intro<br>
+<span class="out">Switched to a new branch 'scene/intro'</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-label">Coder ta scène</div>
+            <div class="step-desc">Ouvre ton fichier dans VS Code et réalise les missions indiquées en commentaire (sections <code># 🎯 MISSION</code>).</div>
+            <div class="code">
+<span class="prompt">$ </span><span class="cmd">code</span> <span class="arg">scenes/intro.py</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-label">Sauvegarder avec un commit</div>
+            <div class="step-desc">Après chaque avancée significative, fais un commit. <strong>Un commit = une tâche précise.</strong></div>
+            <div class="code">
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">status</span>          <span class="cmt"># voir les fichiers modifiés</span><br>
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">add</span> scenes/intro.py  <span class="cmt"># préparer le fichier</span><br>
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">commit -m</span> "feat: ajout de l'énigme scène intro"
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <div class="step-label">Envoyer ta branche sur le serveur</div>
+            <div class="step-desc">Partage ton travail avec le groupe. À faire après chaque commit important.</div>
+            <div class="code">
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">push origin</span> scene/intro<br>
+<span class="out">Branch 'scene/intro' set up to track remote branch.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <div class="step-label">Fusionner dans main (en groupe)</div>
+            <div class="step-desc">Quand une scène est terminée, le groupe intègre la branche dans <code>main</code>.</div>
+            <div class="code">
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">checkout</span> main<br>
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">merge</span> scene/intro<br>
+<span class="out">Merge made by the 'ort' strategy.</span><br>
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">push origin</span> main
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /steps -->
+    </div>
+
+    <!-- MESSAGES DE COMMIT -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#feebc8">💬</div>
+        Bien écrire ses messages de commit
+      </div>
+      <div class="alert blue">
+        <span class="alert-icon">ℹ️</span>
+        <span>Un bon message de commit explique <strong>ce qui a changé et pourquoi</strong>, pas comment. Il sera lu par tes coéquipiers et par toi dans 3 semaines !</span>
+      </div>
+      <div class="commit-types">
+        <div class="commit-type"><span class="commit-prefix" style="color:#2d6a4f">feat:</span> Nouvelle fonctionnalité</div>
+        <div class="commit-type"><span class="commit-prefix" style="color:#c53030">fix:</span> Correction de bug</div>
+        <div class="commit-type"><span class="commit-prefix" style="color:#c05621">style:</span> Texte narratif</div>
+        <div class="commit-type"><span class="commit-prefix" style="color:#1a56db">docs:</span> README</div>
+        <div class="commit-type"><span class="commit-prefix" style="color:#553c9a">refactor:</span> Réécriture</div>
+      </div>
+      <div style="margin-top:0.75rem">
+        <div class="alert green"><span class="alert-icon">✅</span> <code>feat: ajout combat contre le loup avec boucle TANT QUE</code></div>
+        <div class="alert red"><span class="alert-icon">❌</span> <code>modif</code> &nbsp;/&nbsp; <code>ça marche</code> &nbsp;/&nbsp; <code>update fichier</code></div>
+      </div>
+    </div>
+
+    <!-- CONFLIT -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#fed7d7">⚡</div>
+        Résoudre un conflit de merge
+      </div>
+      <div class="alert orange">
+        <span class="alert-icon">⚠️</span>
+        <span>Un conflit se produit quand deux élèves ont modifié <strong>les mêmes lignes</strong> du même fichier. C'est normal — Git demande juste de choisir quelle version garder.</span>
+      </div>
+      <div class="code" style="margin-top:0.6rem">
+<span class="out">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (ta version)</span><br>
+<span class="cmd">    print("Bonjour aventurier !")</span><br>
+<span class="out">=======</span><br>
+<span class="arg">    print("Bienvenue dans le jeu !")</span><br>
+<span class="out">&gt;&gt;&gt;&gt;&gt;&gt;&gt; scene/intro (version du camarade)</span>
+      </div>
+      <div class="steps" style="margin-top:0.75rem">
+        <div class="step">
+          <div class="step-num" style="background:#c53030">1</div>
+          <div class="step-body"><div class="step-label">Ouvrir le fichier conflictuel dans VS Code</div><div class="step-desc">Git indique les fichiers en conflit avec <code>git status</code></div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:#c53030">2</div>
+          <div class="step-body"><div class="step-label">Choisir (ou combiner) les deux versions</div><div class="step-desc">Supprimer les marqueurs <code>&lt;&lt;&lt;</code>, <code>===</code>, <code>&gt;&gt;&gt;</code> et garder le bon code</div></div>
+        </div>
+        <div class="step">
+          <div class="step-num" style="background:#c53030">3</div>
+          <div class="step-body"><div class="step-label">Finaliser le merge</div>
+          <div class="code" style="margin-top:0.3rem">
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">add</span> scenes/intro.py<br>
+<span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">commit -m</span> "fix: résolution conflit scène intro"
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#d8f3dc">✅</div>
+        Checklist de fin de projet
+      </div>
+      <ul class="checklist">
+        <li><div class="check-box"></div> Ma scène fonctionne sans erreur (<code>python main.py</code>)</li>
+        <li><div class="check-box"></div> J'ai fait au moins 3 commits avec des messages clairs</li>
+        <li><div class="check-box"></div> Ma branche est poussée sur le serveur (<code>git push</code>)</li>
+        <li><div class="check-box"></div> Ma scène utilise la structure algorithmique attendue</li>
+        <li><div class="check-box"></div> J'ai complété au moins 2 missions <code># 🎯 MISSION</code></li>
+        <li><div class="check-box"></div> Le merge dans <code>main</code> a été fait en groupe</li>
+        <li><div class="check-box"></div> Le jeu complet se joue de bout en bout</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════ PAGE 2 — SCÉNARIO ═══════════════════ -->
+<div class="page page-break">
+
+  <div class="page-header" style="background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%)">
+    <div class="header-icon">📖</div>
+    <div class="header-text">
+      <h1>Scénario — La Quête du Code</h1>
+      <div class="header-meta">
+        <span class="meta-tag">Contexte narratif</span>
+        <span class="meta-tag">Détail des scènes</span>
+        <span class="meta-tag">Missions</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HISTOIRE -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#feebc8">📜</div>
+        L'histoire
+      </div>
+      <div class="story-box">
+        Dans un monde où les algorithmes font tourner la magie, un <strong>Sorcier du Code</strong> a semé le chaos en lançant des boucles infinies sur le royaume. Chaque route, chaque pont, chaque porte est bloqué dans une répétition sans fin.<br><br>
+        Vous êtes un aventurier qui s'est réveillé seul dans une forêt. Votre mission : traverser les terres maudites, vaincre les créatures corrompues par le Sorcier, et mettre fin à sa boucle infinie une bonne fois pour toutes.<br><br>
+        <strong>Seul un algorithme bien structuré peut vous sauver.</strong>
+      </div>
+    </div>
+
+    <!-- SCÈNES -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#e9d8fd">🗺️</div>
+        Les 4 scènes du jeu
+      </div>
+      <div class="scene-grid">
+
+        <div class="scene-card s1">
+          <div class="scene-header">⚡ Scène 1 — Le Réveil <span class="badge green" style="margin-left:auto">Élève 1</span></div>
+          <div class="scene-body">
+            <p>Le joueur se réveille dans la forêt avec un vieux sac à ses pieds. Premier choix : fouiller ou ignorer le sac (potion de soin + 5 pièces d'or).</p>
+            <p><strong>🎯 Missions :</strong> Ajouter une scène narrative, proposer un objet bonus, créer une énigme avec pénalité/bonus.</p>
+            <div class="scene-struct">
+              Structure : <span class="badge green">Séquentielle</span> <span class="badge orange">Alternative</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-card s2">
+          <div class="scene-header">🌲 Scène 2 — La Forêt Maudite <span class="badge orange" style="margin-left:auto">Élève 2</span></div>
+          <div class="scene-body">
+            <p>Combat contre un Loup Géant (30 PV). Le joueur peut attaquer, utiliser une potion ou fuir. Le loup contre-attaque à chaque tour.</p>
+            <p><strong>🎯 Missions :</strong> Ajouter une énigme post-combat, créer un marchand conditionnel (si assez d'or).</p>
+            <div class="scene-struct">
+              Structure : <span class="badge orange">Alternative</span> <span class="badge blue">TANT QUE</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-card s3">
+          <div class="scene-header">🪨 Scène 3 — La Caverne <span class="badge blue" style="margin-left:auto">Élève 3</span></div>
+          <div class="scene-body">
+            <p>Exploration de 3 salles (boucle POUR), piège à désamorcer en devinant un code (boucle TANT QUE, 3 essais), puis un Troll endormi à gérer.</p>
+            <p><strong>🎯 Missions :</strong> Ajouter une salle de cristaux, améliorer le piège avec indices chaud/froid.</p>
+            <div class="scene-struct">
+              Structure : <span class="badge blue">POUR</span> <span class="badge blue">TANT QUE</span> <span class="badge orange">Alternative</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scene-card s4">
+          <div class="scene-header">🧙 Scène 4 — Le Boss Final <span class="badge purple" style="margin-left:auto">Élève 4</span></div>
+          <div class="scene-body">
+            <p>Combat contre le Sorcier du Code (80 PV). Bonus selon l'inventaire, coups critiques, salve de sorts tous les 4 tours, rage sous 50% PV.</p>
+            <p><strong>🎯 Missions :</strong> Dialogue pré-combat avec bonus, invocation de squelettes, difficulté adaptative.</p>
+            <div class="scene-struct">
+              Structure : <span class="badge green">Séquentielle</span> <span class="badge orange">Alternative</span> <span class="badge blue">TANT QUE</span> <span class="badge blue">POUR</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- COMMANDES RAPIDES -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#d8f3dc">⚡</div>
+        Aide-mémoire Git rapide
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Commande</th>
+            <th>Ce qu'elle fait</th>
+            <th>Quand l'utiliser</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>git status</code></td>
+            <td>Affiche les fichiers modifiés</td>
+            <td>Avant tout commit</td>
+          </tr>
+          <tr>
+            <td><code>git add &lt;fichier&gt;</code></td>
+            <td>Prépare un fichier pour le commit</td>
+            <td>Après modification</td>
+          </tr>
+          <tr>
+            <td><code>git commit -m "msg"</code></td>
+            <td>Sauvegarde un point dans l'historique</td>
+            <td>Après chaque tâche</td>
+          </tr>
+          <tr>
+            <td><code>git push origin &lt;branche&gt;</code></td>
+            <td>Envoie la branche sur le serveur</td>
+            <td>Pour partager son travail</td>
+          </tr>
+          <tr>
+            <td><code>git pull</code></td>
+            <td>Récupère les derniers changements</td>
+            <td>En début de séance</td>
+          </tr>
+          <tr>
+            <td><code>git log --oneline</code></td>
+            <td>Affiche l'historique des commits</td>
+            <td>Pour naviguer l'historique</td>
+          </tr>
+          <tr>
+            <td><code>git branch</code></td>
+            <td>Liste toutes les branches</td>
+            <td>Pour vérifier où on est</td>
+          </tr>
+          <tr>
+            <td><code>git checkout &lt;branche&gt;</code></td>
+            <td>Change de branche</td>
+            <td>Pour naviguer entre branches</td>
+          </tr>
+          <tr>
+            <td><code>git merge &lt;branche&gt;</code></td>
+            <td>Fusionne une branche dans la courante</td>
+            <td>Pour intégrer le travail</td>
+          </tr>
+          <tr>
+            <td><code>git diff</code></td>
+            <td>Montre les modifications en cours</td>
+            <td>Avant de commiter</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PROGRESSION -->
+    <div class="section">
+      <div class="section-title">
+        <div class="section-icon" style="background:#feebc8">📅</div>
+        Planning des séances
+      </div>
+      <table>
+        <thead><tr><th>Séance</th><th>Objectif Git</th><th>Objectif Algorithmique</th><th>Livrable</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td><code>clone</code>, <code>branch</code>, <code>add</code>, <code>commit</code></td>
+            <td>Structure séquentielle</td>
+            <td>Scène intro jouable</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td><code>push</code>, <code>pull</code></td>
+            <td>Structure alternative</td>
+            <td>Choix fonctionnels</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td>Branches en parallèle</td>
+            <td>Boucles TANT QUE / POUR</td>
+            <td>Toutes les scènes codées</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td><code>merge</code>, résolution de conflits</td>
+            <td>Intégration et test</td>
+            <td>Jeu complet jouable</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td><code>log</code>, <code>diff</code>, code review</td>
+            <td>Revue croisée du code</td>
+            <td>Présentation en classe</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
