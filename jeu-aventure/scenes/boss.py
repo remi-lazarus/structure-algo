@@ -2,18 +2,6 @@
 =============================================================
   scenes/boss.py — Le Boss Final : Le Sorcier du Code
 =============================================================
-  RESPONSABLE : Élève 4 (à compléter)
-
-  Objectif pédagogique :
-    → Mobiliser TOUTES les structures algorithmiques
-    → Commit final sur la branche : scene/boss
-
-  Commandes Git pour cette scène :
-    git checkout -b scene/boss
-    git add scenes/boss.py
-    git commit -m "feat: ajout boss final"
-    git push origin scene/boss
-=============================================================
 """
 
 import random
@@ -38,141 +26,185 @@ def afficher_combat(joueur: Joueur, boss_pv: int, boss_nom: str):
 
 
 def scene_boss(joueur: Joueur):
-    """
-    Boss final : combat contre le Sorcier du Code.
+    """Combat final contre le Sorcier du Code."""
 
-    Mobilise TOUTES les structures :
-      - Séquentielle : narration et préparation
-      - Alternative  : choix d'actions et effets spéciaux
-      - TANT QUE     : boucle de combat principale
-      - POUR         : phases de sorts (attaques multiples)
-    """
     afficher_scene("La Tour du Sorcier — Boss Final")
 
     narrer("\nAu sommet de la tour, une silhouette vous attend.")
     narrer(f"C'est lui : le {BOSS_NOM} !")
-    narrer('"Tu as survécu jusqu\'ici... Impressionnant. Mais ça s\'arrête là !"\n')
+    narrer('"Tu as survécu jusqu\'ici... Impressionnant. Mais ça s\'arrête là !"')
 
-    # --- Préparation : bonus selon l'inventaire ---
+    # -------------------------------------------------------
+    # 🧠 Phase de dialogue (quiz)
+    # -------------------------------------------------------
+    narrer("\n🧠 Le sorcier vous teste avant le combat...")
+
+    questions = [
+        ("Combien font 2 + 2 ?", "4"),
+        ("Mot-clé pour une boucle en Python ?", "for"),
+        ("Valeur de True and False ?", "false")
+    ]
+
+    bonnes_reponses = 0
+
+    for question, reponse in questions:
+        print(question)
+        user = input("> ")
+        if user.strip().lower() == reponse.lower():
+            narrer("✔️ Correct !")
+            bonnes_reponses += 1
+        else:
+            narrer("❌ Faux...")
+
     bonus_attaque = 0
+    if bonnes_reponses >= 2:
+        narrer("✨ Le sorcier est impressionné... Vous gagnez +5 en force !")
+        bonus_attaque += 5
+
+    # -------------------------------------------------------
+    # Bonus inventaire
+    # -------------------------------------------------------
     if "Croc de loup" in joueur.inventaire:
         bonus_attaque += 3
         narrer("🐺 Le Croc de loup vous donne +3 en force !")
+
     if "Épée rouillée" in joueur.inventaire:
         bonus_attaque += 2
-        narrer("⚔️  L'Épée rouillée vous donne +2 en force !")
+        narrer("⚔️ L'Épée rouillée vous donne +2 en force !")
 
     force_effective = joueur.force + bonus_attaque
 
-    # --- Variables du boss ---
-    boss_pv = BOSS_PV_MAX
+    # -------------------------------------------------------
+    # ⚖️ Difficulté dynamique
+    # -------------------------------------------------------
+    if joueur.victoires >= 2:
+        narrer("😌 Vous êtes expérimenté : le sorcier est affaibli.")
+        boss_pv = int(BOSS_PV_MAX * 0.75)
+    else:
+        boss_pv = BOSS_PV_MAX
+
     tour = 0
     esquive_active = False
 
     afficher_separateur()
-    narrer("⚔️  COMBAT FINAL !\n")
+    narrer("⚔️ COMBAT FINAL !\n")
 
     # -------------------------------------------------------
-    # Boucle de combat — Structure TANT QUE … FAIRE
-    # On continue tant que les deux adversaires sont en vie
+    # Boucle principale
     # -------------------------------------------------------
     while boss_pv > 0 and joueur.est_vivant():
         tour += 1
         print(f"  ─── Tour {tour} ───")
         afficher_combat(joueur, boss_pv, BOSS_NOM)
 
-        # --- Tour spécial : le sorcier lance une salve ---
-        # Structure POUR : il frappe 3 fois consécutives
+        # -------------------------------------------------------
+        # ☠️ Invocation (tous les 3 tours)
+        # -------------------------------------------------------
+        if tour % 3 == 0:
+            narrer(f"\n☠️ Le {BOSS_NOM} invoque des squelettes !")
+
+            for i in range(1, 3):
+                if joueur.est_vivant():
+                    narrer(f"  Squelette {i}/2 attaque ! (-5 PV)")
+                    joueur.subir_degats(5)
+
+            continue
+
+        # -------------------------------------------------------
+        # 💥 Salve magique (tous les 4 tours)
+        # -------------------------------------------------------
         if tour % 4 == 0:
             narrer(f"\n💥 Le {BOSS_NOM} lance une SALVE DE SORTS !")
-            # --- POUR i allant de 1 à 3 FAIRE ---
+
             for i in range(1, 4):
                 if joueur.est_vivant():
                     degat_sort = random.randint(4, 8)
+
                     if esquive_active:
-                        narrer(f"  Sort {i}/3 : esquivé grâce à votre bouclier !")
+                        narrer(f"  Sort {i}/3 esquivé !")
                     else:
                         joueur.subir_degats(degat_sort)
                         narrer(f"  Sort {i}/3 touche !")
-            esquive_active = False
-            continue  # Pas d'action joueur ce tour
 
-        # --- Actions du joueur ---
+            esquive_active = False
+            continue
+
+        # -------------------------------------------------------
+        # Actions joueur
+        # -------------------------------------------------------
         print("Que faites-vous ?")
         options = ["Attaquer (épée)"]
 
-        # Options conditionnelles selon l'inventaire
         if "Potion de soin" in joueur.inventaire:
             options.append("Utiliser une Potion de soin")
+
         if "Torche magique" in joueur.inventaire:
-            options.append("Utiliser la Torche magique (brûle le sorcier)")
-        options.append("Se protéger (bouclier pour le prochain sort)")
+            options.append("Utiliser la Torche magique")
+
+        options.append("Se protéger")
 
         choix = demander_choix(options)
         action = options[int(choix) - 1]
 
-        # --- Structure alternative : traitement de l'action ---
+        # -------------------------------------------------------
+        # Traitement des actions
+        # -------------------------------------------------------
         if action == "Attaquer (épée)":
-            critique = random.random() < 0.2  # 20% de chance de coup critique
+            critique = random.random() < 0.2
             degats = random.randint(force_effective - 2, force_effective + 4)
+
             if critique:
                 degats *= 2
-                narrer(f"\n  💥 COUP CRITIQUE ! {degats} dégâts !")
+                narrer(f"\n💥 COUP CRITIQUE ! {degats} dégâts !")
             else:
-                narrer(f"\n  ⚔️  Vous frappez pour {degats} dégâts.")
+                narrer(f"\n⚔️ Vous infligez {degats} dégâts.")
+
             boss_pv = max(0, boss_pv - degats)
 
         elif action == "Utiliser une Potion de soin":
             joueur.inventaire.remove("Potion de soin")
             joueur.soigner(30)
 
-        elif "Torche magique" in action:
+        elif action == "Utiliser la Torche magique":
             joueur.inventaire.remove("Torche magique")
-            degats_feu = random.randint(20, 35)
-            narrer(f"\n  🔥 La Torche brûle le sorcier pour {degats_feu} dégâts !")
-            boss_pv = max(0, boss_pv - degats_feu)
+            degats = random.randint(20, 35)
+            narrer(f"\n🔥 La torche brûle le sorcier ! ({degats} dégâts)")
+            boss_pv = max(0, boss_pv - degats)
 
-        else:  # Se protéger
-            narrer("\n  🛡️  Vous levez votre bouclier. Prochain sort esquivé !")
+        else:
+            narrer("\n🛡️ Vous vous préparez à esquiver !")
             esquive_active = True
 
-        # --- Contre-attaque du boss (si encore en vie) ---
+        # -------------------------------------------------------
+        # Contre-attaque du boss
+        # -------------------------------------------------------
         if boss_pv > 0:
-            # Le boss devient plus fort si ses PV sont bas
             if boss_pv < BOSS_PV_MAX // 2:
-                narrer(f"  ⚠️  Le {BOSS_NOM} entre en RAGE !")
+                narrer(f"⚠️ Le {BOSS_NOM} entre en RAGE !")
                 degats_boss = random.randint(BOSS_FORCE, BOSS_FORCE + 8)
             else:
                 degats_boss = random.randint(BOSS_FORCE - 3, BOSS_FORCE + 3)
 
             if not esquive_active:
-                joueur.subir_degats(degats_boss)
+                if random.random() < 0.1:
+                    narrer("😵 Le sorcier rate son attaque !")
+                else:
+                    joueur.subir_degats(degats_boss)
 
     # -------------------------------------------------------
     # Fin du combat
     # -------------------------------------------------------
     afficher_separateur()
+
     if joueur.est_vivant():
-        narrer(f"\n✨ Le {BOSS_NOM} s'effondre dans un dernier cri !")
-        narrer('"Impossible... vaincu par un simple élève de première..."')
-        narrer("\nLa tour tremble. Vous avez sauvé le royaume !")
+        narrer(f"\n✨ Le {BOSS_NOM} est vaincu !")
+        narrer("La tour s'effondre... Vous avez gagné !")
+
         joueur.or_ += 100
         joueur.ramasser("Baguette du Sorcier")
-        narrer(f"\n💰 Vous récupérez 100 pièces d'or et la Baguette du Sorcier !")
-    else:
-        narrer(f"\n💀 Le {BOSS_NOM} ricane : \"Trop facile...\"")
 
-    # -------------------------------------------------------
-    # 🎯 MISSION ÉLÈVE 4 — À COMPLÉTER :
-    # -------------------------------------------------------
-    # 1. Ajouter une phase de dialogue avant le combat :
-    #    → 3 questions du sorcier, SI bonnes réponses → bonus
-    #
-    # 2. Ajouter un sort "Invocation" :
-    #    → Le sorcier invoque 2 squelettes (POUR i de 1 à 2)
-    #    → Chaque squelette inflige 5 dégâts
-    #
-    # 3. Ajouter un système de niveaux de difficulté :
-    #    → SI joueur.victoires >= 2 → boss plus facile (PV réduits)
-    #    → SINON → boss standard
-    # -------------------------------------------------------
+        narrer("💰 +100 or")
+        narrer("🪄 Vous obtenez la Baguette du Sorcier !")
+
+    else:
+        narrer(f"\n💀 Le {BOSS_NOM} vous a vaincu...")
