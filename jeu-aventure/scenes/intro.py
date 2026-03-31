@@ -62,3 +62,6 @@ def scene_intro(joueur: Joueur):
     #    → Si bonne réponse : bonus de PV (joueur.soigner(10))
     #    → Si mauvaise réponse : perte de PV (joueur.subir_degats(5))
     # -------------------------------------------------------
+
+
+narrer("fouiller le donjon")
