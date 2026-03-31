@@ -66,9 +66,39 @@ def demander_choix(options: list) -> str:
     return choix
 
 
+def afficher_carte():
+    """
+    Affiche une carte ASCII du donjon.
+
+    Structure algorithmique : Affichage structuré avec chaînes de caractères
+    """
+    print("\n" + "╔" + "═" * 53 + "╗")
+    print("║" + " " * 15 + "📜 CARTE DU DONJON 📜" + " " * 16 + "║")
+    print("╠" + "═" * 53 + "╣")
+    print("║                                                     ║")
+    print("║           ENTRÉE DU DONJON                          ║")
+    print("║               🚪                                     ║")
+    print("║               │                                     ║")
+    print("║            ═══╳═══                                  ║")
+    print("║               │                                     ║")
+    print("║     ┌─────────┼─────────┐                           ║")
+    print("║     │         │         │                           ║")
+    print("║  🍄 │  SALLE  │  SALLE  │  ⚔️  SALLE              ║")
+    print("║     │   DES   │   DU    │        DU                ║")
+    print("║     │ CHAMPI- │ TRÉSOR  │       TROLL              ║")
+    print("║     │  GNONS  │    💎   │        👹                ║")
+    print("║     │         │         │                           ║")
+    print("║     └────┬────┴────┬────┘                           ║")
+    print("║          │         │                                ║")
+    print("║          └────╳────┘                                ║")
+    print("║               │                                     ║")
+    print("║                                                     ║")
+    print("║  🔑 Légende : 👹 Boss    💎 Trésor    🔥 Danger    ║")
+    print("║                                                     ║")
+    print("╚" + "═" * 53 + "╝\n")
+
+
 # -------------------------------------------------------
 # À COMPLÉTER PAR LES ÉLÈVES
 # -------------------------------------------------------
-# TODO : ajouter une fonction afficher_carte() qui affiche
-#        une carte ASCII du donjon
 # TODO : ajouter une fonction afficher_combat(joueur, ennemi)
