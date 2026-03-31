@@ -208,3 +208,4 @@ def scene_boss(joueur: Joueur):
 
     else:
         narrer(f"\n💀 Le {BOSS_NOM} vous a vaincu...")
+        #je ne sais pas ..
