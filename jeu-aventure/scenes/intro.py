@@ -19,6 +19,10 @@
 from moteur.affichage import afficher_scene, narrer, demander_choix
 from moteur.joueur import Joueur
 
+def _init_(self, CACA):
+    self = CACA
+
+
 
 def scene_intro(joueur: Joueur):
     """
@@ -45,8 +49,10 @@ def scene_intro(joueur: Joueur):
     if choix == "1":
         narrer("\nVous ouvrez le sac et trouvez une potion de soin !")
         joueur.ramasser("Potion de soin")
+        narrer("Vous trouvez 5 pièce d'or !")
         joueur.or_ += 5
-        narrer("Vous trouvez aussi 5 pièces d'or.")
+        narrer("Vous faitez caca")
+        joueur.ramasser("Caca")
     else:
         narrer("\nVous laissez le sac et avancez prudemment.")
         narrer("Dommage... il contenait peut-être quelque chose d'utile.")

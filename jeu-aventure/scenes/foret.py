@@ -40,7 +40,7 @@ def scene_foret(joueur: Joueur):
     loup_pv = 30
     loup_force = 8
 
-    narrer("Un LOUP GÉANT surgit des buissons !\n")
+    narrer("Un LOUP GÉANT DE CACA surgit des buissons !\n")
     print(f"  🐺 Loup Géant — PV : {loup_pv}")
 
     # --- Boucle de combat (structure répétitive TANT QUE) ---
@@ -51,7 +51,8 @@ def scene_foret(joueur: Joueur):
         choix = demander_choix([
             "Attaquer avec votre épée",
             "Utiliser une potion (si vous en avez)",
-            "Tenter de fuir"
+            "Tenter de fuir",
+            "Déposer le caca"
         ])
 
         # --- Structure alternative : action selon le choix ---
@@ -80,12 +81,22 @@ def scene_foret(joueur: Joueur):
                 print("  Le loup en profite pour vous mordre !")
                 joueur.subir_degats(degats_loup)
 
-        else:  # Fuir
+        elif choix == "3":  # Fuir
             narrer("\nVous tentez de fuir... Le loup vous rattrape !")
             joueur.subir_degats(15)
             narrer("Vous réussissez finalement à vous échapper, mais blessé.")
             return  # On quitte la scène sans victoire
-
+        
+        elif choix == "4":
+            # Structure alternative : a-ton-envie de faire caca ?
+                joueur.CACA += 1
+                print("\n(Le caca est déposé.)")
+                print("le loup est préoccupé par le caca")
+                narrer("Vous arrivez à vous enfuir sans prendre de dégât")
+                joueur.afficher_statut()
+                return # Quitte la scène en aillant fait caca
+        
+        
     # --- Résultat du combat ---
     afficher_separateur()
     if joueur.est_vivant():

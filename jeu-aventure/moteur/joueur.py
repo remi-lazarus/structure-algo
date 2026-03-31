@@ -19,6 +19,7 @@ class Joueur:
         self.inventaire = []      # Liste des objets collectés
         self.or_ = 0              # Pièces d'or
         self.victoires = 0        # Nombre de combats gagnés
+        self.CACA = 0
 
     # -------------------------------------------------------
     # Méthodes utilitaires
@@ -52,6 +53,11 @@ class Joueur:
             print(f"  🎒 Inventaire : {', '.join(self.inventaire)}")
         if self.or_ > 0:
             print(f"  💰 Or : {self.or_} pièces")
+
+    def CACA(self, CACA):
+        self.nom = CACA
+        self.inventaire = []
+        self.CACA = 0
 
     # -------------------------------------------------------
     # À COMPLÉTER PAR LES ÉLÈVES
