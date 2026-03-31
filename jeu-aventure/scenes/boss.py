@@ -28,6 +28,24 @@ BOSS_NOM = "Sorcier du Code"
 BOSS_PV_MAX = 80
 BOSS_FORCE = 12
 
+# -------------------------------------------------------
+# Questions du sorcier (Mission 1)
+# -------------------------------------------------------
+QUESTIONS_SORCIER = [
+    {
+        "question": "Combien font 7 × 8 ?",
+        "reponse": "56",
+    },
+    {
+        "question": "Quelle structure répète une action un nombre connu de fois ?",
+        "reponse": "pour",
+    },
+    {
+        "question": "Quel mot-clé permet de tester une condition en Python ?",
+        "reponse": "if",
+    },
+]
+
 
 def afficher_combat(joueur: Joueur, boss_pv: int, boss_nom: str):
     """Affiche l'état du combat en cours."""
@@ -35,6 +53,45 @@ def afficher_combat(joueur: Joueur, boss_pv: int, boss_nom: str):
     print(f"\n  🧙 {boss_nom} | PV [{barre_boss}] {boss_pv}/{BOSS_PV_MAX}")
     joueur.afficher_statut()
     print()
+
+
+# -------------------------------------------------------
+# Mission 1 — Phase de dialogue avant le combat
+# -------------------------------------------------------
+def phase_dialogue(joueur: Joueur) -> int:
+    """
+    Le sorcier pose 3 questions au joueur.
+    Structure POUR : une question par itération.
+    Retourne un bonus d'attaque selon le nombre de bonnes réponses.
+    """
+    narrer(f'\n🧙 "{BOSS_NOM} ricane : "Prouvez votre valeur avant de mourir !"')
+    narrer("Il vous pose 3 questions. Chaque bonne réponse vous accordera un bonus.\n")
+
+    bonnes_reponses = 0
+
+    # --- POUR i allant de 1 à 3 FAIRE ---
+    for i, qa in enumerate(QUESTIONS_SORCIER, start=1):
+        print(f"  Question {i}/3 : {qa['question']}")
+        reponse = input("  Votre réponse : ").strip().lower()
+        # --- Structure alternative : bonne ou mauvaise réponse ---
+        if reponse == qa["reponse"].lower():
+            narrer("  ✅ Correct !")
+            bonnes_reponses += 1
+        else:
+            narrer(f'  ❌ Faux ! La réponse était : {qa["reponse"]}')
+
+    # --- Structure alternative : calcul du bonus ---
+    if bonnes_reponses == 3:
+        bonus = 5
+        narrer("\n🌟 Parfait ! Le sorcier grogne. Vous gagnez +5 en force pour ce combat !")
+    elif bonnes_reponses >= 1:
+        bonus = bonnes_reponses
+        narrer(f"\n✨ {bonnes_reponses}/3 bonnes réponses. Vous gagnez +{bonus} en force.")
+    else:
+        bonus = 0
+        narrer("\n😤 Aucune bonne réponse... Pas de bonus pour vous !")
+
+    return bonus
 
 
 def scene_boss(joueur: Joueur):
@@ -53,8 +110,23 @@ def scene_boss(joueur: Joueur):
     narrer(f"C'est lui : le {BOSS_NOM} !")
     narrer('"Tu as survécu jusqu\'ici... Impressionnant. Mais ça s\'arrête là !"\n')
 
+    # -------------------------------------------------------
+    # Mission 3 — Difficulté adaptée selon les victoires
+    # Structure alternative : SI joueur.victoires >= 2 → boss allégé
+    # -------------------------------------------------------
+    if joueur.victoires >= 2:
+        boss_pv_depart = BOSS_PV_MAX - 20
+        narrer("⚔️  Votre réputation vous précède : le sorcier est affaibli (-20 PV) !")
+    else:
+        boss_pv_depart = BOSS_PV_MAX
+
+    # -------------------------------------------------------
+    # Mission 1 — Phase de dialogue (3 questions)
+    # -------------------------------------------------------
+    bonus_dialogue = phase_dialogue(joueur)
+
     # --- Préparation : bonus selon l'inventaire ---
-    bonus_attaque = 0
+    bonus_attaque = bonus_dialogue  # intègre le bonus du dialogue
     if "Croc de loup" in joueur.inventaire:
         bonus_attaque += 3
         narrer("🐺 Le Croc de loup vous donne +3 en force !")
@@ -65,7 +137,7 @@ def scene_boss(joueur: Joueur):
     force_effective = joueur.force + bonus_attaque
 
     # --- Variables du boss ---
-    boss_pv = BOSS_PV_MAX
+    boss_pv = boss_pv_depart
     tour = 0
     esquive_active = False
 
@@ -95,6 +167,19 @@ def scene_boss(joueur: Joueur):
                         joueur.subir_degats(degat_sort)
                         narrer(f"  Sort {i}/3 touche !")
             esquive_active = False
+            continue  # Pas d'action joueur ce tour
+
+        # -------------------------------------------------------
+        # Mission 2 — Tour d'invocation (tous les 5 tours)
+        # Structure POUR : 2 squelettes invoqués
+        # -------------------------------------------------------
+        if tour % 5 == 0:
+            narrer(f"\n💀 Le {BOSS_NOM} crie : \"Squelettes, à MOI !\"")
+            # --- POUR i allant de 1 à 2 FAIRE ---
+            for i in range(1, 3):
+                if joueur.est_vivant():
+                    narrer(f"  Squelette {i}/2 vous griffes pour 5 dégâts !")
+                    joueur.subir_degats(5)
             continue  # Pas d'action joueur ce tour
 
         # --- Actions du joueur ---
@@ -139,7 +224,7 @@ def scene_boss(joueur: Joueur):
         # --- Contre-attaque du boss (si encore en vie) ---
         if boss_pv > 0:
             # Le boss devient plus fort si ses PV sont bas
-            if boss_pv < BOSS_PV_MAX // 2:
+            if boss_pv < boss_pv_depart // 2:
                 narrer(f"  ⚠️  Le {BOSS_NOM} entre en RAGE !")
                 degats_boss = random.randint(BOSS_FORCE, BOSS_FORCE + 8)
             else:
@@ -161,18 +246,3 @@ def scene_boss(joueur: Joueur):
         narrer(f"\n💰 Vous récupérez 100 pièces d'or et la Baguette du Sorcier !")
     else:
         narrer(f"\n💀 Le {BOSS_NOM} ricane : \"Trop facile...\"")
-
-    # -------------------------------------------------------
-    # 🎯 MISSION ÉLÈVE 4 — À COMPLÉTER :
-    # -------------------------------------------------------
-    # 1. Ajouter une phase de dialogue avant le combat :
-    #    → 3 questions du sorcier, SI bonnes réponses → bonus
-    #
-    # 2. Ajouter un sort "Invocation" :
-    #    → Le sorcier invoque 2 squelettes (POUR i de 1 à 2)
-    #    → Chaque squelette inflige 5 dégâts
-    #
-    # 3. Ajouter un système de niveaux de difficulté :
-    #    → SI joueur.victoires >= 2 → boss plus facile (PV réduits)
-    #    → SINON → boss standard
-    # -------------------------------------------------------
